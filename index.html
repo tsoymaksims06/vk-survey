@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Опрос ВКонтакте</title>
+<style>
+:root{
+  --blue:#0077FF; --blue-dark:#0062d1; --bg:#F3F4F5; --card:#FFFFFF;
+  --text:#000000; --muted:#818C99; --border:#E1E4E8;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#151B22; --card:#1F262E; --text:#F5F6F7; --muted:#8A939B; --border:#2C3540; }
+}
+:root[data-theme="dark"]{ --bg:#151B22; --card:#1F262E; --text:#F5F6F7; --muted:#8A939B; --border:#2C3540; }
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;}
+body{
+  background:radial-gradient(circle at 20% 0%, rgba(0,119,255,0.10), transparent 45%),
+             radial-gradient(circle at 100% 100%, rgba(0,119,255,0.08), transparent 40%),
+             var(--bg);
+  color:var(--text);
+  font-family:-apple-system,system-ui,Roboto,Arial,sans-serif;
+  display:flex; align-items:center; justify-content:center;
+  min-height:100%; padding:24px;
+}
+.card{
+  background:var(--card); width:100%; max-width:420px;
+  border-radius:20px; box-shadow:0 12px 40px rgba(15,30,60,0.14), 0 2px 8px rgba(15,30,60,0.06);
+  padding:32px 26px; position:relative; overflow:hidden;
+  border-top:4px solid var(--blue);
+  animation:cardIn .35s ease;
+}
+@keyframes cardIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+.progress{ height:5px; background:var(--border); border-radius:4px; margin-bottom:26px; overflow:hidden; }
+.progress-fill{ height:100%; background:linear-gradient(90deg,var(--blue),#4FA6FF); border-radius:4px; transition:width .35s ease; }
+.logo{
+  width:60px; height:60px; border-radius:16px;
+  background:linear-gradient(135deg,#2E9AFF,var(--blue));
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:23px; margin:0 auto 18px;
+  box-shadow:0 6px 16px rgba(0,119,255,0.35);
+}
+h1{ font-size:21px; font-weight:700; text-align:center; margin:0 0 8px; letter-spacing:-0.2px; }
+p.sub{ color:var(--muted); text-align:center; font-size:14px; margin:0 0 24px; line-height:1.5; }
+label{ font-size:13px; color:var(--muted); display:block; margin:14px 0 6px; }
+input[type=text], input[type=tel]{
+  width:100%; padding:13px 14px; border:1.5px solid var(--border); border-radius:11px;
+  font-size:15px; background:var(--bg); color:var(--text); outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+input:focus{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,119,255,0.12); }
+.consent{ display:flex; align-items:flex-start; gap:8px; margin:18px 0 4px; font-size:12.5px; color:var(--muted); line-height:1.4; }
+.consent input{ margin-top:2px; accent-color:var(--blue); }
+.btn{
+  width:100%; padding:14px; margin-top:22px; border:none; border-radius:11px;
+  background:var(--blue); color:#fff; font-size:15.5px; font-weight:600;
+  cursor:pointer; transition:background .15s, transform .1s, box-shadow .15s;
+  box-shadow:0 6px 16px rgba(0,119,255,0.28);
+}
+.btn:hover{ background:var(--blue-dark); transform:translateY(-1px); }
+.btn:active{ transform:translateY(0); }
+.btn:disabled{ background:var(--border); color:var(--muted); cursor:not-allowed; box-shadow:none; }
+.btn-back{
+  background:transparent; color:var(--blue); font-weight:500; margin-top:10px; box-shadow:none;
+}
+.btn-back:hover{ background:transparent; text-decoration:underline; transform:none; }
+.q-title{ font-size:17.5px; font-weight:700; margin:0 0 20px; line-height:1.4; }
+.option{
+  display:flex; align-items:center; gap:10px; padding:13px 14px; border:1.5px solid var(--border);
+  border-radius:11px; margin-bottom:9px; cursor:pointer; font-size:14.5px; transition:border-color .15s, background .15s;
+}
+.option:hover{ border-color:var(--blue); background:rgba(0,119,255,0.04); }
+.option input{ accent-color:var(--blue); width:17px; height:17px; }
+.stars{ display:flex; gap:8px; justify-content:center; margin:10px 0 6px; }
+.star{ font-size:34px; color:var(--border); cursor:pointer; transition:color .15s, transform .1s; }
+.star:hover{ transform:scale(1.12); }
+.star.active{ color:var(--blue); }
+textarea{
+  width:100%; min-height:100px; padding:13px 14px; border:1.5px solid var(--border); border-radius:11px;
+  font-size:14.5px; font-family:inherit; background:var(--bg); color:var(--text); resize:vertical; outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+textarea:focus{ border-color:var(--blue); box-shadow:0 0 0 3px rgba(0,119,255,0.12); }
+.screen{ display:none; }
+.screen.active{ display:block; animation:fadeSlide .3s ease; }
+@keyframes fadeSlide{ from{opacity:0; transform:translateX(10px);} to{opacity:1; transform:translateX(0);} }
+.final-icon{ width:64px; height:64px; border-radius:50%;
+  background:linear-gradient(135deg,#2E9AFF,var(--blue)); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 18px;
+  box-shadow:0 8px 20px rgba(0,119,255,0.35); animation:pop .4s ease; }
+@keyframes pop{ 0%{transform:scale(0.6); opacity:0;} 70%{transform:scale(1.08);} 100%{transform:scale(1); opacity:1;} }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="progress"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+  <!-- Экран 0: приветствие + контакты -->
+  <div class="screen active" data-screen="0">
+    <div class="logo">VK</div>
+    <h1>Помогите сделать ВКонтакте лучше</h1>
+    <p class="sub">Пройдите короткий опрос — это займёт 2 минуты. Мы не запрашиваем ваш логин и пароль.</p>
+
+    <label>Фамилия</label>
+    <input type="text" id="lastName" placeholder="Иванов">
+
+    <label>Имя</label>
+    <input type="text" id="firstName" placeholder="Иван">
+
+    <label>Номер телефона</label>
+    <input type="tel" id="phone" placeholder="+7 (___) ___-__-__">
+
+    <label>Проект</label>
+    <input type="text" id="project" placeholder="Наименование">
+
+    <div class="consent">
+      <input type="checkbox" id="consent">
+      <span>Согласен на обработку персональных данных</span>
+    </div>
+
+    <button class="btn" id="startBtn" disabled onclick="goTo(1)">Начать</button>
+  </div>
+
+  <!-- Вопрос 1 -->
+  <div class="screen" data-screen="1">
+    <p class="q-title">Как часто вы пользуетесь ВКонтакте?</p>
+    <label class="option"><input type="radio" name="q1" value="Каждый день"> Каждый день</label>
+    <label class="option"><input type="radio" name="q1" value="Несколько раз в неделю"> Несколько раз в неделю</label>
+    <label class="option"><input type="radio" name="q1" value="Редко"> Редко</label>
+    <label class="option"><input type="radio" name="q1" value="Почти не захожу"> Почти не захожу</label>
+    <button class="btn" onclick="goTo(2)">Далее</button>
+    <button class="btn btn-back" onclick="goTo(0)">Назад</button>
+  </div>
+
+  <!-- Вопрос 2 -->
+  <div class="screen" data-screen="2">
+    <p class="q-title">Оцените удобство интерфейса ВК</p>
+    <div class="stars" id="stars">
+      <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+      <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+      <span class="star" data-v="5">★</span>
+    </div>
+    <button class="btn" onclick="goTo(3)">Далее</button>
+    <button class="btn btn-back" onclick="goTo(1)">Назад</button>
+  </div>
+
+  <!-- Вопрос 3 -->
+  <div class="screen" data-screen="3">
+    <p class="q-title">Какими функциями вы пользуетесь чаще всего?</p>
+    <label class="option"><input type="checkbox" class="q3opt" value="Лента"> Лента</label>
+    <label class="option"><input type="checkbox" class="q3opt" value="Сообщения"> Сообщения</label>
+    <label class="option"><input type="checkbox" class="q3opt" value="Музыка"> Музыка</label>
+    <label class="option"><input type="checkbox" class="q3opt" value="Клипы"> Клипы</label>
+    <label class="option"><input type="checkbox" class="q3opt" value="Группы / сообщества"> Группы / сообщества</label>
+    <button class="btn" onclick="goTo(4)">Далее</button>
+    <button class="btn btn-back" onclick="goTo(2)">Назад</button>
+  </div>
+
+  <!-- Вопрос 4 -->
+  <div class="screen" data-screen="4">
+    <p class="q-title">Что вызывает у вас неудобства при использовании ВК?</p>
+    <textarea id="q4" placeholder="Напишите здесь..."></textarea>
+    <button class="btn" onclick="goTo(5)">Далее</button>
+    <button class="btn btn-back" onclick="goTo(3)">Назад</button>
+  </div>
+
+  <!-- Вопрос 5 -->
+  <div class="screen" data-screen="5">
+    <p class="q-title">Что бы вы хотели улучшить или добавить в ВКонтакте?</p>
+    <textarea id="q5" placeholder="Ваши идеи..."></textarea>
+    <button class="btn" onclick="submitSurvey()">Завершить</button>
+    <button class="btn btn-back" onclick="goTo(4)">Назад</button>
+  </div>
+
+  <!-- Финал -->
+  <div class="screen" data-screen="6">
+    <div class="final-icon">✓</div>
+    <h1>Спасибо за ваши ответы!</h1>
+    <p class="sub">Вы прошли опрос из 5 вопросов. Ваше мнение поможет сделать ВКонтакте лучше.</p>
+  </div>
+</div>
+
+<script>
+const total = 6;
+function updateProgress(n){
+  document.getElementById('progressFill').style.width = (n/total*100)+'%';
+}
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelector('[data-screen="'+n+'"]').classList.add('active');
+  updateProgress(n);
+}
+function checkForm(){
+  const ok = document.getElementById('lastName').value.trim() &&
+             document.getElementById('firstName').value.trim() &&
+             document.getElementById('phone').value.trim() &&
+             document.getElementById('project').value.trim() &&
+             document.getElementById('consent').checked;
+  document.getElementById('startBtn').disabled = !ok;
+}
+['lastName','firstName','phone','project'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', checkForm);
+});
+document.getElementById('consent').addEventListener('change', checkForm);
+
+let ratingValue = '';
+document.querySelectorAll('.star').forEach(star=>{
+  star.addEventListener('click', ()=>{
+    const v = +star.dataset.v;
+    ratingValue = String(v);
+    document.querySelectorAll('.star').forEach(s=>{
+      s.classList.toggle('active', +s.dataset.v <= v);
+    });
+  });
+});
+
+function submitSurvey(){
+  const q1 = (document.querySelector('input[name="q1"]:checked') || {}).value || '';
+  const q3 = Array.from(document.querySelectorAll('.q3opt:checked')).map(el=>el.value).join(', ');
+  const lastName = document.getElementById('lastName').value;
+  const firstName = document.getElementById('firstName').value;
+  const phone = document.getElementById('phone').value;
+  const project = document.getElementById('project').value;
+  const q4 = document.getElementById('q4').value;
+  const q5 = document.getElementById('q5').value;
+
+  const text =
+    'Новый ответ — опрос ВКонтакте\n\n' +
+    'Фамилия: ' + lastName + '\n' +
+    'Имя: ' + firstName + '\n' +
+    'Телефон: ' + phone + '\n' +
+    'Проект: ' + project + '\n\n' +
+    'Как часто пользуется ВК: ' + q1 + '\n' +
+    'Оценка интерфейса: ' + ratingValue + '/5\n' +
+    'Используемые функции: ' + q3 + '\n' +
+    'Неудобства: ' + q4 + '\n' +
+    'Что улучшить: ' + q5;
+
+  const SHEETDB_URL = 'https://sheetdb.io/api/v1/pbnzmoknaytuh?sheet=VK';
+  fetch(SHEETDB_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ data: [{
+      'Дата/время': new Date().toLocaleString('ru-RU'),
+      'Фамилия': lastName,
+      'Имя': firstName,
+      'Телефон': phone,
+      'Проект': project,
+      'Как часто пользуется ВК': q1,
+      'Оценка интерфейса (1-5)': ratingValue,
+      'Используемые функции': q3,
+      'Что вызывает неудобства': q4,
+      'Что улучшить': q5
+    }]})
+  }).catch(err=>{ console.error('SheetDB fetch failed:', err); });
+
+  goTo(6);
+}
+</script>
+</body>
+</html>
